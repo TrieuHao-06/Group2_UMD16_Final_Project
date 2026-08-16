@@ -1,0 +1,83 @@
+# ==========================================
+# 1. PYTHON SYSTEM & BYTECODE (File tạm Python)
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# 2. VIRTUAL ENVIRONMENT (Môi trường ảo)
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# ==========================================
+# 3. IDE & CODE EDITORS (Cấu hình công cụ code)
+# ==========================================
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm / JetBrains
+.idea/
+
+# Editor config files
+*.swp
+*.swo
+*~
+
+# ==========================================
+# 4. DATABASE & LOGS (Cơ sở dữ liệu & Log)
+# ==========================================
+*.db
+*.sqlite3
+*.log
+logs/
+
+# ==========================================
+# 5. TESTING & COVERAGE (File chạy test)
+# ==========================================
+.pytest_cache/
+.coverage
+htmlcov/
+.pytest_cache
+
+# ==========================================
+# 6. OPERATING SYSTEM FILES (File rác hệ điều hành)
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
