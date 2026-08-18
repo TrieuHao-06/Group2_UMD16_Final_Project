@@ -1,0 +1,37 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+build/
+dist/
+*.egg-info/
+
+# ===== Virtual environment =====
+venv/
+env/
+.venv/
+
+# ===== Secret / Password / Key =====
+.env
+*.env
+secrets.json
+*.pem
+*.key
+
+# ===== Database local =====
+*.db
+*.sqlite3
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+*.swp
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== File tam cua Office =====
+~$*.docx
+~$*.pptx
+~$*.xlsx
