@@ -1,83 +1,31 @@
-# ==========================================
-# 1. PYTHON SYSTEM & BYTECODE (File tạm Python)
-# ==========================================
+# Python bytecode & cache
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
-# ==========================================
-# 2. VIRTUAL ENVIRONMENT (Môi trường ảo)
-# ==========================================
+# Môi trường ảo (Virtual Environment)
 .venv/
 venv/
 ENV/
 env/
-env.bak/
-venv.bak/
 
-# ==========================================
-# 3. IDE & CODE EDITORS (Cấu hình công cụ code)
-# ==========================================
-# VS Code
+# Cấu hình IDE (VS Code, PyCharm)
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-
-# PyCharm / JetBrains
 .idea/
-
-# Editor config files
 *.swp
-*.swo
-*~
 
-# ==========================================
-# 4. DATABASE & LOGS (Cơ sở dữ liệu & Log)
-# ==========================================
+# Cơ sở dữ liệu & File Log local
 *.db
 *.sqlite3
 *.log
-logs/
 
-# ==========================================
-# 5. TESTING & COVERAGE (File chạy test)
-# ==========================================
+# Testing & Coverage
 .pytest_cache/
 .coverage
-htmlcov/
-.pytest_cache
 
-# ==========================================
-# 6. OPERATING SYSTEM FILES (File rác hệ điều hành)
-# ==========================================
-# macOS
+# File rác Hệ điều hành (macOS, Windows)
 .DS_Store
-.AppleDouble
-.LSOverride
 Thumbs.db
-
-# Windows
-Thumbs.db
-ehthumbs.db
 Desktop.ini
-$RECYCLE.BIN/
