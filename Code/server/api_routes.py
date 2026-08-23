@@ -93,3 +93,43 @@ def handle_get_profile(client_socket, request_data, server_instance): #Lấy th�
             }
     finally:
         db.close()
+
+
+def handle_find_match(client_socket, request_data, server_instance): #Xử lý yêu cầu tìm trận đấu từ client, thêm socket của client vào hàng đợi tìm trận và bắt đầu trận đấu nếu có đủ người chơi
+    with match_lock:
+        if client_socket not in match_queue:
+            match_queue.append(client_socket)
+
+        if len(match_queue) >= 2:
+            sock_x = match_queue.pop(0)
+            sock_o = match_queue.pop(0)
+
+            user_x = server_instance.clients[sock_x]
+            user_o = server_instance.clients[sock_o]
+
+            match_id = str(uuid.uuid4())
+            active_matches[match_id] = {
+                "game": CaroGame(),
+                "sock_x": sock_x,
+                "sock_o": sock_o,
+                "user_x_id": user_x["user_id"],
+                "user_o_id": user_o["user_id"],
+                "last_move_time": time.time()  # Ghi nhận thời điểm bắt đầu lượt
+            }
+
+            send_message(sock_x, {
+                "action": "match_start",
+                "match_id": match_id,
+                "my_symbol": PLAYER_X,
+                "opponent_name": user_o["username"]
+            })
+
+            send_message(sock_o, {
+                "action": "match_start",
+                "match_id": match_id,
+                "my_symbol": PLAYER_O,
+                "opponent_name": user_x["username"]
+            })
+
+    return None
+
