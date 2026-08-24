@@ -133,3 +133,38 @@ def handle_find_match(client_socket, request_data, server_instance): #Xử lý y
 
     return None
 
+def handle_make_move(client_socket, request_data, server_instance): #Xử lý yêu cầu đi nước từ client, xác nhận nước đi hợp lệ và gửi thông tin nước đi đến đối thủ
+    match_id = request_data.get("match_id")
+    row = request_data.get("row")
+    col = request_data.get("col")
+
+    with match_lock:
+        match = active_matches.get(match_id)
+        if not match:
+            return None
+
+        game = match["game"]
+        sock_x = match["sock_x"]
+        sock_o = match["sock_o"]
+
+        player_symbol = PLAYER_X if client_socket == sock_x else PLAYER_O
+
+        success, msg = game.make_move(row, col, player_symbol)
+        if not success:
+            return None
+        match["last_move_time"] = time.time()# Cập nhật lại thời gian vừa đánh nước mới
+        move_broadcast = {
+                    "action": "move_made",
+                    "row": row,
+                    "col": col,
+                    "symbol": player_symbol,
+                    "next_turn": game.current_turn
+                }
+        send_message(sock_x, move_broadcast)# Gửi thông tin nước đi đến cả hai người chơi
+        send_message(sock_o, move_broadcast)# Gửi thông tin nước đi đến cả hai người chơi
+        
+        if game.winner or game.is_draw:# Nếu có người thắng hoặc hòa, kết thúc trận đấu
+            _finish_match(match_id, game.winner, game.is_draw, reason="normal")
+            return None
+        
+
