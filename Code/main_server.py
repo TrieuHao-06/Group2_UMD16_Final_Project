@@ -7,7 +7,7 @@ import server.api_routes
 
 if __name__ == "__main__":
     print("========================================")
-    print("     KHỞI ĐỘNG SERVER CARO ONLINE       ")
+    print("     Starting ONLINE SERVER       ")
     print("========================================")
     
     init_db()
