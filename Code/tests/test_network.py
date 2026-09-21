@@ -11,10 +11,8 @@ import threading
 import time
 from unittest.mock import MagicMock
 
-# ============================================================================
 # GIẢ LẬP HÀM NETWORK UTILS (Thay bằng import thực tế từ common.network_utils)
 # from common.network_utils import receive_data, send_data
-# ============================================================================
 
 def receive_data(sock):
     """
@@ -37,9 +35,7 @@ def recvall(sock, n):
         data.extend(packet)
     return bytes(data)
 
-# ============================================================================
 # MOCK SOCKET DÙNG CHO KIỂM THỬ GÓI TIN
-# ============================================================================
 
 class MockSocketStream:
     """Giả lập một TCP Socket Stream để test cơ chế cắt/ghép gói tin"""
@@ -54,9 +50,7 @@ class MockSocketStream:
         self.index += len(chunk)
         return chunk
 
-# ============================================================================
 # 1. TEST DÍNH GÓI & PHÂN MẢNH TCP (PACKET STICKING & FRAGMENTATION)
-# ============================================================================
 
 def test_tcp_packet_sticking():
     """
@@ -114,9 +108,7 @@ def test_tcp_packet_fragmentation():
     res = receive_data(mock_sock)
     assert json.loads(res.decode('utf-8'))['action'] == "ping"
 
-# ============================================================================
 # 2. TEST TẢI & KẾT NỐI ĐỒNG THỜI (CONCURRENCY / LOAD TEST)
-# ============================================================================
 
 def dummy_tcp_server(host, port, stop_event):
     """Server giả lập đơn giản để nhận kết nối từ các luồng test tải"""
