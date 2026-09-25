@@ -5,17 +5,17 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
-    from client.api_client import ApiClient
+    from client.network import NetworkClient
 except ImportError:
-    from api_client import ApiClient
+    from network import NetworkClient
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
 
 class LobbyFrame(ctk.CTkFrame):
-    def __init__(self, master, api_client: ApiClient, user_data: dict, on_logout_callback, on_start_game_callback):
+    def __init__(self, master, network_client: NetworkClient, user_data: dict, on_logout_callback, on_start_game_callback):
         super().__init__(master, fg_color="transparent")
-        self.api_client = api_client
+        self.network_client = network_client
         self.user_data = user_data or {"username": "Guest", "elo": 1200, "win": 0, "loss": 0}
         self.on_logout = on_logout_callback
         self.on_start_game = on_start_game_callback
@@ -195,7 +195,13 @@ class LobbyFrame(ctk.CTkFrame):
         for widget in self.scroll_bxh.winfo_children():
             widget.destroy()
 
-        bxh_data = self.api_client.get_leaderboard()
+        # Tạm thời dùng dữ liệu giả lập vì Server TCP chưa có API get_leaderboard
+        bxh_data = [
+            {"rank": 1, "username": "CaoThuCaro", "elo": 1650, "win_rate": "85%"},
+            {"rank": 2, "username": "vi_user", "elo": 1200, "win_rate": "83%"},
+            {"rank": 3, "username": "Hai_Socket", "elo": 1150, "win_rate": "60%"},
+            {"rank": 4, "username": "Hao_Database", "elo": 1080, "win_rate": "55%"},
+        ]
 
         for item in bxh_data:
             rank = item.get("rank", "-")
@@ -237,7 +243,7 @@ if __name__ == "__main__":
     app.geometry("850x580")
     app.configure(fg_color="#0F0F0F")
 
-    api = ApiClient(use_mock=True)
+    net_client = NetworkClient()
     fake_user = {"username": "vi_user", "elo": 1200, "win": 12, "loss": 3}
 
     def mock_logout():
@@ -246,7 +252,7 @@ if __name__ == "__main__":
     def mock_start_game(room_id):
         messagebox.showinfo("Start Game", f"Chuyển sang Bàn cờ Pygame: {room_id}")
 
-    lobby = LobbyFrame(app, api, fake_user, on_logout_callback=mock_logout, on_start_game_callback=mock_start_game)
+    lobby = LobbyFrame(app, net_client, fake_user, on_logout_callback=mock_logout, on_start_game_callback=mock_start_game)
     lobby.pack(fill="both", expand=True)
 
     app.mainloop()

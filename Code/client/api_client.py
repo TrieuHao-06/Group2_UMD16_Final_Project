@@ -38,14 +38,18 @@ class ApiClient:
             return False, "Vui lòng không để trống ô nào!"
 
         if self.use_mock:
+            print(f"[API_CLIENT DEBUG] use_mock=True! Đang dùng giả lập, KHÔNG gửi request thật.")
             if username == "admin":
                 return False, "Tài khoản này đã tồn tại!"
             return True, "Đăng ký thành công! Hãy đăng nhập lại."
 
         try:
+            url = f"{self.base_url}/register"
+            payload = {"username": username, "password": password, "email": email}
+            print(f"[API_CLIENT DEBUG] Gửi POST request tới: {url} với payload: {payload}")
             response = requests.post(
-                f"{self.base_url}/register", 
-                json={"username": username, "password": password, "email": email}, 
+                url, 
+                json=payload, 
                 timeout=5
             )
             data = response.json()

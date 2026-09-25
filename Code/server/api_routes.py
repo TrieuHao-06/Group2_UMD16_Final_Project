@@ -17,8 +17,10 @@ match_lock = threading.Lock()
 # --- AUTHENTICATION & PROFILE ---
 
 def handle_register(client_socket, request_data, server_instance): #Tiếp nhận và xử lý yêu cầu tạo tài khoản người dùng mới từ client
+    print(f"\n[SERVER DEBUG] Nhận request đăng ký: {request_data}")
     username = request_data.get("username")
     password = request_data.get("password")
+    email = request_data.get("email")
 
     if not username or not password:
         return {"action": "register_response", "status": "error", "message": "Thiếu thông tin đăng ký."}
@@ -30,9 +32,13 @@ def handle_register(client_socket, request_data, server_instance): #Tiếp nhậ
             return {"action": "register_response", "status": "error", "message": "Tên đăng nhập đã tồn tại."}
 
         hashed_password = get_password_hash(password)
-        new_user = User(username=username, password_hash=hashed_password)
+        new_user = User(username=username, email=email, password_hash=hashed_password)
+        import os
+        db_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'server', 'caro_game.db'))
+        print(f"[SERVER DEBUG] Chuẩn bị insert User: username='{username}', email='{email}', hash='{hashed_password}'")
         db.add(new_user)
         db.commit()
+        print(f"[SERVER DEBUG] Insert thành công! DB path đang dùng: {db_path}")
         return {"action": "register_response", "status": "success", "message": "Đăng ký thành công!"}
     except Exception as e:
         db.rollback()
@@ -44,17 +50,30 @@ def handle_register(client_socket, request_data, server_instance): #Tiếp nhậ
 def handle_login(client_socket, request_data, server_instance): #Xử lý Đăng nhập
     username = request_data.get("username")
     password = request_data.get("password")
-
+    
+    print(f"\n[LOGIN DEBUG] Bắt đầu xử lý đăng nhập")
+    print(f"[LOGIN DEBUG] Nhận được username từ client: '{username}'")
+    
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.username == username).first()
-        if not user or not verify_password(password, user.password_hash):
+        if not user:
+            print(f"[LOGIN DEBUG] Không tìm thấy user '{username}' trong DB.")
+            return {"action": "login_response", "status": "error", "message": "Sai tài khoản hoặc mật khẩu."}
+            
+        print(f"[LOGIN DEBUG] Tìm thấy user trong DB. Hash lưu trữ: '{user.password_hash}'")
+        
+        is_valid = verify_password(password, user.password_hash)
+        print(f"[LOGIN DEBUG] Kết quả verify_password: {is_valid}")
+        
+        if not is_valid:
             return {"action": "login_response", "status": "error", "message": "Sai tài khoản hoặc mật khẩu."}
 
         with server_instance.clients_lock:
             server_instance.clients[client_socket]["user_id"] = user.id
             server_instance.clients[client_socket]["username"] = user.username
 
+        print(f"[LOGIN DEBUG] Đăng nhập thành công cho user: '{username}'")
         return {
             "action": "login_response",
             "status": "success",
@@ -67,8 +86,12 @@ def handle_login(client_socket, request_data, server_instance): #Xử lý Đăng
                 "matches_won": user.matches_won
             }
         }
+    except Exception as e:
+        print(f"[LOGIN DEBUG EXCEPTION] Lỗi xảy ra: {e}")
+        return {"action": "login_response", "status": "error", "message": f"Lỗi server: {e}"}
     finally:
         db.close()
+
 
 def handle_get_profile(client_socket, request_data, server_instance): #Lấy thông tin hồ sơ người dùng từ cơ sở dữ liệu dựa trên user_id được lưu trong server_instance.clients
     """API giúp Client lấy lại thông tin Elo/Thắng thua mới nhất sau trận đấu"""

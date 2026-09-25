@@ -29,6 +29,7 @@ class NetworkClient:
         """Gửi gói tin JSON sang Server"""
         if self.is_connected and self.sock:
             try:
+                print(f"[NETWORK DEBUG] Gửi qua socket: IP={self.sock.getpeername()[0]}, PORT={self.sock.getpeername()[1]}, Payload={data}")
                 send_message(self.sock, data)
             except Exception as e:
                 print(f"[CLIENT NETWORK ERROR] Lỗi gửi tin: {e}")

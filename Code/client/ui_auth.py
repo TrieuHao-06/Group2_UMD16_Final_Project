@@ -5,20 +5,23 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
-    from client.api_client import ApiClient
+    from client.network import NetworkClient
 except ImportError:
-    from api_client import ApiClient
+    from network import NetworkClient
 
 # Thiết lập Giao diện Toàn cầu
 ctk.set_appearance_mode("Dark")  
 ctk.set_default_color_theme("blue")  
 
 class AuthFrame(ctk.CTkFrame):
-    def __init__(self, master, api_client: ApiClient, on_login_success_callback):
+    def __init__(self, master, network_client: NetworkClient, on_login_success_callback):
         # Đặt fg_color="transparent" để Frame chính tệp với màu nền của App
         super().__init__(master, fg_color="transparent") 
-        self.api_client = api_client
+        self.network_client = network_client
         self.on_login_success = on_login_success_callback
+        
+        self.network_client.register_callback("login_response", self.on_login_response)
+        self.network_client.register_callback("register_response", self.on_register_response)
 
         self.init_ui()
 
@@ -111,10 +114,19 @@ class AuthFrame(ctk.CTkFrame):
         self.btn_login.configure(text="ĐANG XỬ LÝ...", state="disabled")
         self.update()
 
-        success, message, user_info = self.api_client.login(username, password)
+        self.network_client.send({
+            "action": "login",
+            "username": username,
+            "password": password
+        })
 
-        if success:
+    def on_login_response(self, response):
+        status = response.get("status")
+        message = response.get("message")
+        
+        if status == "success":
             self.login_msg_label.configure(text=message, text_color="#28A745") # Xanh lá
+            user_info = response.get("data")
             self.after(500, lambda: self.on_login_success(user_info))
         else:
             self.login_msg_label.configure(text=message, text_color="#FF4C4C") # Đỏ
@@ -166,6 +178,8 @@ class AuthFrame(ctk.CTkFrame):
         password = self.reg_pass_entry.get().strip()
         confirm_pass = self.reg_confirm_pass_entry.get().strip()
 
+        print(f"[UI_AUTH DEBUG] Chuẩn bị gửi đăng ký: username='{username}', email='{email}', password='{password}'")
+
         if password != confirm_pass:
             self.reg_msg_label.configure(text="Mật khẩu xác nhận không khớp!", text_color="#FF4C4C")
             return
@@ -173,9 +187,18 @@ class AuthFrame(ctk.CTkFrame):
         self.btn_register.configure(text="ĐANG TẠO...", state="disabled")
         self.update()
 
-        success, message = self.api_client.register(username, password, email)
+        self.network_client.send({
+            "action": "register",
+            "username": username,
+            "password": password,
+            "email": email
+        })
 
-        if success:
+    def on_register_response(self, response):
+        status = response.get("status")
+        message = response.get("message")
+
+        if status == "success":
             self.reg_msg_label.configure(text=message, text_color="#28A745")
             messagebox.showinfo("Thành công", "Tạo tài khoản thành công! Vui lòng đăng nhập.")
             self.tabview.set("Đăng Nhập")
@@ -195,12 +218,13 @@ if __name__ == "__main__":
     app.geometry("450x600") 
     app.configure(fg_color="#0F0F0F") # Đen nhám hiện đại
 
-    api = ApiClient(use_mock=True)
+    net_client = NetworkClient()
+    net_client.connect()
 
     def on_success(user_data):
         messagebox.showinfo("Welcome", f"Đăng nhập thành công!\nXin chào: {user_data['username']}")
 
-    auth_ui = AuthFrame(app, api_client=api, on_login_success_callback=on_success)
+    auth_ui = AuthFrame(app, network_client=net_client, on_login_success_callback=on_success)
     auth_ui.pack(fill="both", expand=True)
 
     app.mainloop()

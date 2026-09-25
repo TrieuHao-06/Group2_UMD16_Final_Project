@@ -5,7 +5,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from client.api_client import ApiClient
+from client.network import NetworkClient
 from client.ui_auth import AuthFrame
 from client.ui_lobby import LobbyFrame
 from client.ui_challenge import ChallengeDialog
@@ -20,7 +20,11 @@ class ClientApp(ctk.CTk):
         self.geometry("450x600")
         self.configure(fg_color="#0F0F0F")
 
-        self.api_client = ApiClient(use_mock=True)
+        self.network_client = NetworkClient()
+        success, msg = self.network_client.connect()
+        if not success:
+            messagebox.showerror("Lỗi Kết Nối", msg)
+            
         self.current_user = None
 
         self.current_frame = None
@@ -38,7 +42,7 @@ class ClientApp(ctk.CTk):
         
         self.current_frame = AuthFrame(
             self, 
-            api_client=self.api_client, 
+            network_client=self.network_client, 
             on_login_success_callback=self.handle_login_success
         )
         self.current_frame.pack(fill="both", expand=True)
@@ -49,7 +53,7 @@ class ClientApp(ctk.CTk):
 
         self.current_frame = LobbyFrame(
             self, 
-            api_client=self.api_client, 
+            network_client=self.network_client, 
             user_data=self.current_user, 
             on_logout_callback=self.handle_logout, 
             on_start_game_callback=self.handle_start_game
