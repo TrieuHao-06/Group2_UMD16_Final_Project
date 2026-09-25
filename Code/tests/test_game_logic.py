@@ -8,11 +8,9 @@ def test_horizontal_win():
     # X đánh hàng ngang từ cột 0 đến 4 ở hàng 0
     for i in range(4):
         game.make_move(0, i, PLAYER_X)  # X đánh
-        game.make_move(1, i, PLAYER_O)  # O đánh phòng thủ hàng dưới
-    
+        game.make_move(1, i, PLAYER_O)  # O đánh phòng thủ hàng dưới 
     # Nước thứ 5 quyết định của X
     success, msg = game.make_move(0, 4, PLAYER_X)
-    
     assert success is True
     assert game.winner == PLAYER_X
 
