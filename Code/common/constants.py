@@ -1,8 +1,8 @@
 # common/constants.py
 
 # --- CẤU HÌNH MẠNG (NETWORK) ---
-SERVER_HOST = '127.0.0.1'  # Localhost để dev. Đổi IP khi đưa lên mạng lan/internet.
-SERVER_PORT = 5050
+SERVER_HOST = '26.194.172.69'  # IP của máy bạn (máy chạy Server)
+SERVER_PORT = 5000
 HEADER_LENGTH = 4          # Số byte dùng để lưu độ dài gói tin
 FORMAT = 'utf-8'
 
